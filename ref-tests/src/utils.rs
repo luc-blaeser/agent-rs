@@ -90,13 +90,12 @@ pub async fn create_agent(identity: Box<dyn Identity>) -> Result<Agent, String> 
         .map_err(|e| format!("{:?}", e))
 }
 
-pub fn with_agent<F, R>(f: F)
+#[tokio::main(flavor = "current-thread")]
+pub async fn with_agent<F, R>(f: F)
 where
     R: Future<Output = Result<(), Box<dyn Error>>>,
     F: FnOnce(Agent) -> R,
 {
-    let runtime = tokio::runtime::Runtime::new().expect("Could not create tokio runtime.");
-    runtime.block_on(async {
         let agent_identity = create_identity()
             .await
             .expect("Could not create an identity.");
@@ -110,8 +109,7 @@ where
         match f(agent).await {
             Ok(_) => {}
             Err(e) => panic!("{:?}", e),
-        };
-    })
+        }
 }
 
 pub async fn create_universal_canister(agent: &Agent) -> Result<Principal, Box<dyn Error>> {

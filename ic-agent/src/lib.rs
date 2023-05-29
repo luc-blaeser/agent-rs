@@ -83,11 +83,11 @@
 //!   Ok(canister_id)
 //! }
 //!
-//! # let mut runtime = tokio::runtime::Runtime::new().unwrap();
-//! # runtime.block_on(async {
+//! # #[tokio::main(flavor = "current-thread")]
+//! # async fn main() {
 //! let canister_id = create_a_canister().await.unwrap();
 //! eprintln!("{}", canister_id);
-//! # });
+//! # }
 //! ```
 //! For more information about the Agent interface used in this example, see the
 //! [Agent] documentation.

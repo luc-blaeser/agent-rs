@@ -34,7 +34,7 @@ pub use ReqwestTransport as ReqwestHttpReplicaV2Transport; // deprecate after 0.
 impl ReqwestTransport {
     /// Creates a replica transport from a HTTP URL.
     pub fn create<U: Into<String>>(url: U) -> Result<Self, AgentError> {
-        #[cfg(not(target_family = "wasm"))]
+        #[cfg(not(all(target_family = "wasm", target_os = "unknown")))]
         {
             Self::create_with_client(
                 url,
@@ -44,7 +44,11 @@ impl ReqwestTransport {
                     .expect("Could not create HTTP client."),
             )
         }
-        #[cfg(all(target_family = "wasm", feature = "wasm-bindgen"))]
+        #[cfg(all(
+            target_family = "wasm",
+            target_os = "unknown",
+            feature = "wasm-bindgen"
+        ))]
         {
             Self::create_with_client(url, Client::new())
         }
@@ -207,15 +211,23 @@ impl Transport for ReqwestTransport {
 
 #[cfg(test)]
 mod test {
-    #[cfg(all(target_family = "wasm", feature = "wasm-bindgen"))]
+    #[cfg(all(
+        target_family = "wasm",
+        target_os = "unknown",
+        feature = "wasm-bindgen"
+    ))]
     use wasm_bindgen_test::wasm_bindgen_test;
-    #[cfg(all(target_family = "wasm", feature = "wasm-bindgen"))]
+    #[cfg(all(
+        target_family = "wasm",
+        target_os = "unknown",
+        feature = "wasm-bindgen"
+    ))]
     wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
     use super::ReqwestTransport;
 
-    #[cfg_attr(not(target_family = "wasm"), test)]
-    #[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+    #[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), test)]
+    #[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
     fn redirect() {
         fn test(base: &str, result: &str) {
             let t = ReqwestTransport::create(base).unwrap();

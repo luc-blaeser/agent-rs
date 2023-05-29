@@ -111,11 +111,11 @@ where
     ///   Ok(canister_id)
     /// }
     ///
-    /// # let mut runtime = tokio::runtime::Runtime::new().unwrap();
-    /// # runtime.block_on(async {
+    /// # #[tokio::main(flavor = "current_thread")]
+    /// # async fn main() {
     /// let canister_id = create_a_canister().await.unwrap();
     /// eprintln!("{}", canister_id);
-    /// # });
+    /// # }
     /// ```
     fn and_then<Out2, R, AndThen>(
         self,

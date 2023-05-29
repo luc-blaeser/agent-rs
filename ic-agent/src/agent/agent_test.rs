@@ -13,14 +13,22 @@ use crate::{
 };
 use ic_certification::Label;
 use std::collections::BTreeMap;
-#[cfg(all(target_family = "wasm", feature = "wasm-bindgen"))]
+#[cfg(all(
+    target_family = "wasm",
+    target_os = "unknown",
+    feature = "wasm-bindgen"
+))]
 use wasm_bindgen_test::wasm_bindgen_test;
 
-#[cfg(all(target_family = "wasm", feature = "wasm-bindgen"))]
+#[cfg(all(
+    target_family = "wasm",
+    target_os = "unknown",
+    feature = "wasm-bindgen"
+))]
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 async fn query() -> Result<(), AgentError> {
     let blob = Vec::from("Hello World");
     let response = QueryResponse::Replied {
@@ -56,8 +64,8 @@ async fn query() -> Result<(), AgentError> {
     Ok(())
 }
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 async fn query_error() -> Result<(), AgentError> {
     let (query_mock, url) =
         mock("POST", "/api/v2/canister/aaaaa-aa/query", 500, vec![], None).await;
@@ -82,8 +90,8 @@ async fn query_error() -> Result<(), AgentError> {
     Ok(())
 }
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 async fn query_rejected() -> Result<(), AgentError> {
     let response: QueryResponse = QueryResponse::Rejected(RejectResponse {
         reject_code: RejectCode::DestinationInvalid,
@@ -128,8 +136,8 @@ async fn query_rejected() -> Result<(), AgentError> {
     Ok(())
 }
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 async fn call_error() -> Result<(), AgentError> {
     let (call_mock, url) = mock("POST", "/api/v2/canister/aaaaa-aa/call", 500, vec![], None).await;
 
@@ -150,8 +158,8 @@ async fn call_error() -> Result<(), AgentError> {
     Ok(())
 }
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 async fn call_rejected() -> Result<(), AgentError> {
     let reject_body = RejectResponse {
         reject_code: RejectCode::SysTransient,
@@ -188,8 +196,8 @@ async fn call_rejected() -> Result<(), AgentError> {
     Ok(())
 }
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 async fn call_rejected_without_error_code() -> Result<(), AgentError> {
     let reject_body = RejectResponse {
         reject_code: RejectCode::SysTransient,
@@ -226,8 +234,8 @@ async fn call_rejected_without_error_code() -> Result<(), AgentError> {
     Ok(())
 }
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 async fn status() -> Result<(), AgentError> {
     let ic_api_version = "1.2.3".to_string();
     let mut map = BTreeMap::new();
@@ -256,8 +264,8 @@ async fn status() -> Result<(), AgentError> {
     Ok(())
 }
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 async fn status_okay() -> Result<(), AgentError> {
     let mut map = BTreeMap::new();
     map.insert(
@@ -286,8 +294,8 @@ async fn status_okay() -> Result<(), AgentError> {
     Ok(())
 }
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 // test that the agent (re)tries to reach the server.
 // We spawn an agent that waits 400ms between requests, and times out after 600ms. The agent is
 // expected to hit the server at ~ 0ms and ~ 400 ms, and then shut down at 600ms, so we check that
@@ -426,8 +434,8 @@ const PRUNED_SUBNET: [u8; 1064] = [
     178, 247, 106, 100, 101, 108, 101, 103, 97, 116, 105, 111, 110, 246,
 ];
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 // asserts that a delegated certificate with correct /subnet/<subnetid>/canister_ranges
 // passes the certificate verification
 async fn check_subnet_range_with_valid_range() {
@@ -455,8 +463,8 @@ async fn check_subnet_range_with_valid_range() {
         .expect("read state failed");
 }
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 // asserts that a delegated certificate with /subnet/<subnetid>/canister_ranges that don't include
 // the canister gets rejected by the cert verification because the subnet is not authorized to
 // respond to requests for this canister. We do this by using a correct response but serving it
@@ -487,8 +495,8 @@ async fn check_subnet_range_with_unauthorized_range() {
     assert_eq!(result, Err(AgentError::CertificateNotAuthorized()));
 }
 
-#[cfg_attr(not(target_family = "wasm"), tokio::test)]
-#[cfg_attr(target_family = "wasm", wasm_bindgen_test)]
+#[cfg_attr(not(all(target_family = "wasm", target_os = "unknown")), tokio::test)]
+#[cfg_attr(all(target_family = "wasm", target_os = "unknown"), wasm_bindgen_test)]
 // asserts that a delegated certificate with pruned/removed /subnet/<subnetid>/canister_ranges
 // gets rejected by the cert verification. We do this by using a correct response that has
 // the leaf manually pruned
@@ -548,7 +556,11 @@ mod mock {
     }
 }
 
-#[cfg(all(target_family = "wasm", feature = "wasm-bindgen"))]
+#[cfg(all(
+    target_family = "wasm",
+    target_os = "unknown",
+    feature = "wasm-bindgen"
+))]
 mod mock {
     use js_sys::*;
     use reqwest::Client;
